@@ -104,7 +104,7 @@ void loop() {
     for(i = 0; i< SONAR_NUM_2; i++){
       int c = Wire.read(); // receive the byte as integer
       arduino_2[i] = c;
-      Serial.print("Sensor Distancia ");
+      Serial.print("Distance Sensor ");
       Serial.print(i);
       Serial.print(": ");
       Serial.println(arduino_2[i]);
@@ -163,7 +163,7 @@ void loop() {
     lcd.print(Hum);
 
     lcd.setCursor(0,1);
-    lcd.print("Chuva ");
+    lcd.print("Raining ");
     lcd.setCursor(6,1);
     lcd.print(strRaining);
     lcd.setCursor(8,1);
@@ -179,7 +179,7 @@ void loop() {
   //Serial Monitor - Arduino NANO - Distance Sensors
   if(v == 1){ 
     lcd.setCursor(0,0);
-    lcd.print("Distancia 1: ");
+    lcd.print("Distance 1: ");
     lcd.setCursor(13,0); 
     lcd.print(arduino_2[0]);
     if(arduino_2[0]<10){
@@ -191,7 +191,7 @@ void loop() {
     }
     
     lcd.setCursor(0,1);
-    lcd.print("Distancia 2: ");
+    lcd.print("Distance 2: ");
     lcd.setCursor(13,1); 
     lcd.print(arduino_2[1]);
     if(arduino_2[1]<10){
