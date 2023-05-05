@@ -1,9 +1,10 @@
 // ---------------------------------------------------------------------------
-// MULTISENSORES - MASTER + LCD - POR I2C  Gabriel Nakata - 2016
+// MULTISENSORES - MASTER + LCD - BY I2C  Gabriel Nakata - 2016
 // ---------------------------------------------------------------------------
 
-#include <Wire.h> // Biblioteca do I2C
-#include <LiquidCrystal.h>
+#include <Wire.h> // I2C Library.
+#include <LiquidCrystal.h> //LCD Library.
+
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
 //////// LCD ////////
@@ -11,22 +12,22 @@ int fadeValue = 200;
 int lcd_key     = 0;
 int adc_key_in  = 0;
 
-#define btnRIGHT  0
-#define btnUP     1
-#define btnDOWN   2
-#define btnLEFT   3
-#define btnSELECT 4
-#define btnNONE   5
+#define btnRIGHT 0 //Define LCD Button Right
+#define btnUP 1 //Define LCD Button Up
+#define btnDOWN 2 //Define LCD Button Down
+#define btnLEFT 3 //Define LCD Button Left
+#define btnSELECT 4 //Define LCD Button Select
+#define btnNONE 5 //Define None
+
 //////// LCD ////////
 
-#define SONAR_NUM_1     4 // Numero de Sensores do Arduino 1.
-#define ARDUINO_1       15 //Endereco do Arduino 1
+#define SENSOR_NUM_1 4 // Number of Sensors on Arduino 1 (UNO)
+#define ARDUINO_1 15 // Arduino 1 Address (NANO)
+#define SENSOR_NUM_2 // Number of Sensors on Arduino 2 (NANO)
+#define ARDUINO_2 8 // Arduino 2 Address (NANO)
 
-#define SONAR_NUM_2     2 // Numero de Sensores do Arduino 2.
-#define ARDUINO_2       8 //Endereco do Arduino 2
-
-int arduino_1[SONAR_NUM_1];
-int arduino_2[SONAR_NUM_2];
+int arduino_1[SONAR_NUM_1]; //Sensor Data from Arduino 1 (UNO)
+int arduino_2[SONAR_NUM_2]; //Sensor Data from Arduino 2 (NANO)
 
 int RainVal;
 int IsRaining;
@@ -35,7 +36,7 @@ int Hum;
 String strRaining;
 int v = 0;
 
-int read_LCD_buttons(){               // ler botao
+int read_LCD_buttons(){               // read botton
     adc_key_in = analogRead(0);        
 
     if (adc_key_in > 1000) return btnNONE; 
@@ -46,31 +47,30 @@ int read_LCD_buttons(){               // ler botao
      if (adc_key_in < 555)  return btnLEFT; 
      if (adc_key_in < 790)  return btnSELECT;  
 
-    return btnNONE;                // Se nenhuma acima tiver aciona returna isso.
+    return btnNONE;                // If nothing was pressed it will return NONE
 }
 
 void setup() {
 
-  Wire.begin(); // adiciona o master no barramento I2C
+  Wire.begin(); // add the master in the I2C
   Serial.begin(115200); 
   lcd.begin(16, 2);               // start the library
-  lcd.setCursor(0,0);             // set the LCD cursor   position 
+  lcd.setCursor(0,0);             // set the LCD cursor position 
   lcd.print("Push the buttons"); 
 }
 
 void loop() {
-  ////////// Parte para receber os dados do SLAVE 1 ////////// 
-  ////////// Cria um vetor dos sensores do Arduino 1 ////////// 
+  ////////// Receive Data from SLAVE 1 - Arduino 1 (UNO) ////////// 
   
-  Wire.requestFrom(ARDUINO_1, SONAR_NUM_1);    // requisita um dado do dispositivo slave com endereço ARDUINO_1
+  Wire.requestFrom(ARDUINO_1, SONAR_NUM_1);    // request data from SLAVE 1
   
   Serial.println();
-  Serial.println("///////////////   Dados do Arduino 1 ///////////////");
+  Serial.println("/////////////// Data from Arduino 1 ///////////////");
   
   int i = 0;
-  while (Wire.available()) { // o endereço pode mandar menos que o requisitado
+  while (Wire.available()) { 
     for(i = 0; i< SONAR_NUM_1; i++){
-      int c = Wire.read(); // recebe o byte como inteiro
+      int c = Wire.read(); // receive the byte as integer
       arduino_1[i] = c;
     }
     Temp = arduino_1[0];
@@ -79,31 +79,30 @@ void loop() {
     RainVal = arduino_1[3]*4;
     Serial.print("Temp: ");
     Serial.print(Temp);
-    Serial.print("        Humidade: ");
+    Serial.print("        Huminity: ");
     Serial.print(Hum);
-    Serial.print("        Chuvendo: ");
+    Serial.print("        Raining:  ");
     if(IsRaining){
-    strRaining = "S";
+    strRaining = "Y";
     }
     else{
       strRaining = "N";
     }
     Serial.print(strRaining);
-    Serial.print("        Nivel de Agua: ");
+    Serial.print("        Water Level: ");
     Serial.println(RainVal);
   }
 
-  ////////// Parte para receber os dados do SLAVE 2 ////////// 
-  ////////// Cria um vetor dos sensores do Arduino 2 ////////// 
+  ////////// Receive Data from SLAVE 2 - Arduino 2 (NANO) ////////// 
   
-  Wire.requestFrom(ARDUINO_2, SONAR_NUM_2);    // requisita um dado do dispositivo slave com endereço ARDUINO_2
+  Wire.requestFrom(ARDUINO_2, SONAR_NUM_2);    // request data from SLAVE 2
   
   Serial.println();
-  Serial.println("///////////////   Dados do Arduino 2 ///////////////");
+  Serial.println("/////////////// Data from Arduino 2 ///////////////");
   
-  while (Wire.available()) { // o endereço pode mandar menos que o requisitado
+  while (Wire.available()) { 
     for(i = 0; i< SONAR_NUM_2; i++){
-      int c = Wire.read(); // recebe o byte como inteiro
+      int c = Wire.read(); // receive the byte as integer
       arduino_2[i] = c;
       Serial.print("Sensor Distancia ");
       Serial.print(i);
@@ -114,13 +113,11 @@ void loop() {
 
   delay(100);
 
-  /////// LCD ///////
-
   analogWrite (10, fadeValue);    
 
   lcd_key = read_LCD_buttons();
   switch (lcd_key){
-        case btnRIGHT:{             //  Aperte o botao direito ou esquerda para trocar o vetor do Arduino que vai ser mostrado no LCD
+        case btnRIGHT:{             //  Press left or right to change the Data
             if(v == 0) {
               lcd.setCursor(0,0);
               lcd.print("Arduino 2");
@@ -130,7 +127,7 @@ void loop() {
               lcd.print("Arduino 1");
             }
             delay(500);
-            lcd.clear(); // Limpa a tela do LCD.
+            lcd.clear();
             v++;
             break;
        }
@@ -144,7 +141,7 @@ void loop() {
               lcd.print("Arduino 1");
             }
             delay(500);
-            lcd.clear(); // Limpa a tela do LCD.
+            lcd.clear();
             v++;
             break;
        }   
@@ -154,7 +151,7 @@ void loop() {
     v = 0;
   }
   
-  //Dados do Arduino 1 - Estacaoo Meteorologica
+  //Serial Monitor - Arduino UNO - Weather Station
   if(v == 0){ 
     lcd.setCursor(0,0);
     lcd.print("Temp: ");
@@ -179,7 +176,7 @@ void loop() {
     }
   }
 
-  //Dados do Arduino 2 - Mulsensores Distancia
+  //Serial Monitor - Arduino NANO - Distance Sensors
   if(v == 1){ 
     lcd.setCursor(0,0);
     lcd.print("Distancia 1: ");
@@ -208,5 +205,5 @@ void loop() {
 }
 
 // ---------------------------------------------------------------------------
-// MULTISENSORES - MASTER + LCD - POR I2C  Gabriel Nakata - 2016
+// MULTISENSORS - MASTER + LCD - BY I2C  Gabriel Nakata - 2016
 // ---------------------------------------------------------------------------
