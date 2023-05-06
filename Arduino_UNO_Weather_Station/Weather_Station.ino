@@ -5,14 +5,14 @@
 #include "DHT.h"
 #include <Wire.h>
 
-#define SONAR_NUM_1     4 // Numero de Sensores do Arduino 1.
-#define ARDUINO_1       15 //Endereco do Arduino 1
+#define SONAR_NUM_1     4 // Number of Sensors
+#define ARDUINO_1       15 // Arduino Address
 
-#define DHTPIN A1 //pino analógico A1 
+#define DHTPIN A1 // analog pin A1 
 #define DHTTYPE DHT11 
 
-int RainIn = A0; //pino analógico A0
-int RainDigitalIn = 2; //pino digital 2
+int RainIn = A0; // analog pin A0
+int RainDigitalIn = 2; // digital pin 2
 int RainVal;
 int RainI2C;
 boolean IsRaining = false;
@@ -26,49 +26,48 @@ DHT dht(DHTPIN, DHTTYPE);
 void setup() {
   Serial.begin(9600);
   pinMode(RainDigitalIn,INPUT);
-  Serial.println("Teste do DHT11!");
+  Serial.println("DHT11 Test!");
   dht.begin();
   
-  Wire.begin(ARDUINO_1);                // inicia o i2c com o endereço de ARDUINO_1
-  Wire.onRequest(requestEvent); // caso seja solicitado este slave, ele vai para a funcao que foi atribuido
+  Wire.begin(ARDUINO_1); // start I2C with the address
+  Wire.onRequest(requestEvent); // if the MASTER request data, it will do the requestEvent
 }
 
 void loop() {
 
-  //Sensor de Chuva
+  //Raining Sensor
   RainVal = analogRead(RainIn);
-  RainI2C = RainVal/4; //divide por 4 pois no i2c vai até 255, desta forma divide por 4 no slave e multiplica por 4 no master
+  RainI2C = RainVal/4; //divides by 4 bacause i2c goes until 255. The Master will multiple by 4 to get the real result
   
   IsRaining = !(digitalRead(RainDigitalIn));
 
   if(IsRaining){
-    strRaining = "Sim";
+    strRaining = "Yes";
   }
   else{
-    strRaining = "Nao";
+    strRaining = "No";
   }
   
-  Serial.print("Chovendo?: ");
+  Serial.print("Raining?: ");
   Serial.print(strRaining);  
-  Serial.print("\t   Level de Agua: ");
+  Serial.print("\t   Water Level: ");
   Serial.print(RainVal);
-  
   
   delay(100);
   
   //DHT11
   h = dht.readHumidity();
   t = dht.readTemperature();
-  if (isnan(t) || isnan(h)) // testa se é não um numero
+  if (isnan(t) || isnan(h)) // check if it not a number
   {
-    Serial.println("Falha na Leitura do DHT");
+    Serial.println("Failed to read DHT11");
   } 
   else
   {
-    Serial.print("  ///////  Umidade: ");
+    Serial.print("  ///////  Huminity: ");
     Serial.print(h);
     Serial.print(" %t");
-    Serial.print("  Temperatura: ");
+    Serial.print("  Temperature: ");
     Serial.print(t);
     Serial.println(" *C");
   }
@@ -76,14 +75,14 @@ void loop() {
 
 void requestEvent(){
   
-  uint8_t data[SONAR_NUM_1];  //vetor para envio de dados para o MASTER
+  uint8_t data[SONAR_NUM_1];  // data to be sent to MASTER
 
-    data[0] = h; //Humidade
-    data[1] = t; //Temperatura
+    data[0] = h; //HumiHuminitydade
+    data[1] = t; //Temperature
     data[2] = IsRaining;
     data[3] = RainI2C;
     
-  Wire.write(data,SONAR_NUM_1); // vetor, numero de bytes para enviar
+  Wire.write(data,SONAR_NUM_1); // vector, bytes numbers to send
 } 
 
 // ---------------------------------------------------------------------------

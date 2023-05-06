@@ -20,7 +20,6 @@ NewPing sonar[SONAR_NUM_2] = {
   NewPing(5, 6, MAX_DISTANCE)  // Trigger / Echo / Max Distance
 };
 
-
 void setup() {
   Serial.begin(115200);
   pingTimer[0] = millis() + 75;
@@ -29,7 +28,6 @@ void setup() {
   
   Wire.begin(ARDUINO_2);                // Start I2C with the address
   Wire.onRequest(requestEvent); // if the MASTER request data, it will do the requestEvent
-  
 }
 
 void loop() {
@@ -43,7 +41,6 @@ void loop() {
       sonar[currentSensor].ping_timer(echoCheck); // Ping
     }
   }
-  
 }
 
 void echoCheck() {  // get the ping of the sensor
