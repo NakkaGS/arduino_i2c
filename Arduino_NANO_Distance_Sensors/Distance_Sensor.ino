@@ -12,8 +12,8 @@
 #define PING_INTERVAL 33 // Milisegunds between the pings
 
 unsigned long pingTimer[SONAR_NUM_2]; 
-unsigned int cm[SONAR_NUM_2];         // Storage the Distances 
-uint8_t currentSensor = 0;          // Check which sensor is activated
+unsigned int cm[SONAR_NUM_2];         // storage the Distances 
+uint8_t currentSensor = 0;          // check which sensor is activated
  
 NewPing sonar[SONAR_NUM_2] = {  
   NewPing(7, 8, MAX_DISTANCE), // Trigger / Echo / Max Distance
@@ -26,7 +26,7 @@ void setup() {
   for (uint8_t i = 1; i < SONAR_NUM_2; i++)
     pingTimer[i] = pingTimer[i - 1] + PING_INTERVAL;
   
-  Wire.begin(ARDUINO_2);                // Start I2C with the address
+  Wire.begin(ARDUINO_2);                // start I2C with the address
   Wire.onRequest(requestEvent); // if the MASTER request data, it will do the requestEvent
 }
 
@@ -48,7 +48,7 @@ void echoCheck() {  // get the ping of the sensor
     cm[currentSensor] = sonar[currentSensor].ping_result / US_ROUNDTRIP_CM;
 }
 
-void oneSensorCycle() { // After end cycle, it does something with the data
+void oneSensorCycle() { // after end cycle, it does something with the data
   for (uint8_t i = 0; i < SONAR_NUM_2; i++) {
     Serial.print(i);
     Serial.print("=");
@@ -60,7 +60,7 @@ void oneSensorCycle() { // After end cycle, it does something with the data
 
 void requestEvent(){
   
-  uint8_t data[SONAR_NUM_2];  //data to be sent to MASTER
+  uint8_t data[SONAR_NUM_2];  // data to be sent to MASTER
   for(int i = 0; i < SONAR_NUM_2; i++)
   {
     data[i] = cm[i];
